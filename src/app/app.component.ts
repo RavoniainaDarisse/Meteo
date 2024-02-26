@@ -1,38 +1,39 @@
-import { Component, OnInit } from '@angular/core';
-import { WeatherData } from './models/weather.model';
-import { WeatherService } from './services/weather.service';
+import { Component } from '@angular/core';
+import { CommonService } from './common.service';
+declare var $:any;
 
 @Component({
   selector: 'app-root',
+
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
+  title = 'ng-projet-app';
+  IsChangeLocation=false;
+  TodayDate: Date;
+  cityName: any;
+  weatherData: any;
 
-  constructor(private weatherService: WeatherService) {
-
+  constructor(private service:CommonService){
+    this.TodayDate = new Date();
+  }
+  
+  changeLocation(){
+    debugger
+    this.IsChangeLocation = this.IsChangeLocation==true?false:true;
   }
 
-  cityName: string = 'wellington';
-  weatherdata?: WeatherData;
-
-  ngOnInit(): void {
-    this.getWeatherData(this.cityName)
-    this.cityName = '';
+  getWeatherDataByCity(){
+    debugger
+    var city = $("#CityName").val();
+    this.service.getWeatherData(city).subscribe(data=>{
+      this.cityName = city;
+      console.log('data',data)
+      this.weatherData = data;
+    })
   }
-
-  onSubmit(): void {
-    this.getWeatherData(this.cityName)
-    this.cityName = '';
-  }
-
-  private getWeatherData(cityName: string) {
-    this.weatherService.getWeatherData(cityName)
-      .subscribe({
-        next: (response) => {
-          this.weatherdata = response;
-          console.log(response);
-        }
-      });
+  transform(value: number): number {
+    return Math.round(value);
   }
 }
